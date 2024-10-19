@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -29,7 +30,7 @@ func RepositoryFactory(filename string) *Repository {
 
 func (r *Repository) GetData() (*types.State, error) {
 	location := "Repository.GetData()\n"
-	filepath, err := util.GetPathToFile(".", r.filename)
+	filepath, err := util.GetPathToFile("", r.filename)
 
 	if err != nil {
 		fmt.Printf(location+"Failed to get path to file\n%v\n", err)
@@ -39,8 +40,15 @@ func (r *Repository) GetData() (*types.State, error) {
 	data, err := os.ReadFile(filepath)
 
 	if err != nil {
-		fmt.Printf(location+"Failed to read file\n%v\n", err)
-		return nil, err
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Println("No save data found, creating...")
+			newState := r.InitState()
+
+			return newState, nil
+		} else {
+			fmt.Printf(location+"Failed to read file\n%v\n", err)
+			return nil, err
+		}
 	}
 
 	var state types.State
@@ -58,13 +66,28 @@ func (r *Repository) GetData() (*types.State, error) {
 
 func (r *Repository) Save(newState types.State) error {
 	location := "Repository.Save()\n"
-	filepath, err := util.GetPathToFile(".", r.filename)
+	filepath, err := util.GetPathToFile("", r.filename)
 
 	if err != nil {
 		fmt.Printf(location+"Failed to get path to file\n%v\n", err)
 		return err
 	}
+	fmt.Printf("filepath: %q\n", filepath)
 
+	_, err = os.Stat(filepath)
+
+	if errors.Is(err, os.ErrNotExist) {
+		f, err := os.Create(filepath)
+
+		if err != nil {
+			fmt.Printf(location+"Failed to create file\n%v\n", err)
+			return err
+		}
+
+		f.Close()
+	}
+
+	fmt.Printf(location + "marshalling data...\n")
 	data, err := json.Marshal(newState)
 
 	if err != nil {
