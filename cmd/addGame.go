@@ -105,38 +105,22 @@ func addGameHandler(cmd *cobra.Command, args []string) error {
 	lose := 0.0
 	var newRating1, newRating2, team1RatingChange, team2RatingChange float64
 
-	fmt.Printf("team2.Rating - team1.Rating = %f\n", team2.Rating-team1.Rating)
-
 	probability1 := (1.0 / (1.0 + math.Pow(10, (team2.Rating-team1.Rating)/400)))
 	probability2 := (1.0 / (1.0 + math.Pow(10, (team1.Rating-team2.Rating)/400)))
 
 	if teamScore1 > teamScore2 {
-		fmt.Printf("%q wins against %q\n", teamName1, teamName2)
-
-		fmt.Printf("probability1: %f\n", probability1)
-		fmt.Printf("probability2: %f\n", probability2)
-
-		fmt.Printf("win - probability1 = %f\n", (win - probability1))
-
 		team1RatingChange = k * (win - probability1)
 		team2RatingChange = k * (lose - probability2)
-
-		fmt.Printf("team1RatingChange = %f\n", team1RatingChange)
-		fmt.Printf("team2RatingChange = %f\n", team2RatingChange)
-
-		newRating1 = team1.Rating + team1RatingChange
-		newRating2 = team2.Rating + team2RatingChange
 	} else {
-		fmt.Printf("%q wins against %q\n", teamName2, teamName1)
-		newRating1 = team1.Rating + (k * (lose - probability1))
-		newRating2 = team2.Rating + (k * (win - probability2))
+		team1RatingChange = k * (lose - probability1)
+		team2RatingChange = k * (win - probability2)
 	}
+
+	newRating1 = team1.Rating + team1RatingChange
+	newRating2 = team2.Rating + team2RatingChange
 
 	fmt.Printf("New rating for %q is %f\n", teamName1, newRating1)
 	fmt.Printf("New rating for %q is %f\n", teamName2, newRating2)
-
-	// team1RatingChange := newRating1 - team1.Rating
-	// team2RatingChange := newRating2 - team2.Rating
 
 	game := &types.Game{
 		Team1:             team1.Name,
@@ -174,6 +158,7 @@ func addGameHandler(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	fmt.Println("Game add success!")
 	return nil
 }
 
