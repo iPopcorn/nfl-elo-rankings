@@ -41,3 +41,9 @@ func (t *Team) SetRecord() {
 func (t *Team) Print() {
 	fmt.Printf("%d) %s (%d - %d) %.0f\n", t.Rank, t.Name, t.Wins, t.Losses, t.Rating)
 }
+
+func (t *Team) DisplayGames() {
+	for _, game := range t.Games {
+		fmt.Printf("%s %d - %d %s\n", game.Team1, game.Team1Score, game.Team2Score, game.Team2)
+	}
+}
