@@ -5,5 +5,6 @@ type Team struct {
 	Name        string  `json:"name"`
 	Tag         string  `json:"tag"`
 	Rating      float64 `json:"rating"`
+	Rank        int     `json:"rank"`
 	Games       []Game  `json:"games"`
 }
