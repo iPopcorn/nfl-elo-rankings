@@ -51,7 +51,7 @@ func findTeamHandler(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, team := range foundTeams {
-		fmt.Printf("%d) %q: %.0f\n", team.Rank, team.Name, team.Rating)
+		team.Print()
 	}
 
 	return nil

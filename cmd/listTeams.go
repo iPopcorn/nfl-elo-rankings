@@ -36,8 +36,8 @@ func listTeamHandler(cmd *cobra.Command, args []string) error {
 		return state.Teams[i].Rating > state.Teams[j].Rating
 	})
 
-	for i, team := range state.Teams {
-		fmt.Printf("%d) %q %.0f\n", i+1, team.Name, team.Rating)
+	for _, team := range state.Teams {
+		team.Print()
 	}
 
 	return nil

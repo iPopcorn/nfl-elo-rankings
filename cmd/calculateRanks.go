@@ -35,11 +35,11 @@ func calculateRanksHandler(cmd *cobra.Command, args []string) error {
 		return state.Teams[i].Rating > state.Teams[j].Rating
 	})
 
-	for i, team := range state.Teams {
+	for i := range state.Teams {
 		rank := i + 1
 		state.Teams[i].Rank = rank
-
-		fmt.Printf("%d) %q %.0f\n", i+1, team.Name, team.Rating)
+		state.Teams[i].SetRecord()
+		state.Teams[i].Print()
 	}
 
 	err = repo.Save(*state)
