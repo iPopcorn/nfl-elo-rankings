@@ -37,7 +37,7 @@ func listTeamHandler(cmd *cobra.Command, args []string) error {
 	})
 
 	for i, team := range state.Teams {
-		fmt.Printf("%d) %q %f\n", i+1, team.Name, team.Rating)
+		fmt.Printf("%d) %q %.0f\n", i+1, team.Name, team.Rating)
 	}
 
 	return nil

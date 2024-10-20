@@ -10,19 +10,17 @@ import (
 
 var findTeam = &cobra.Command{
 	Use:   "find",
-	Short: "find a team by name",
-	Long: `find a team by name.
+	Short: "find teams by their names",
+	Long: `find multiple teams by name.
 Case sensitive
-Takes 1 arg, the name of the team to find`,
+Takes many args, the name of the teams to find`,
 	RunE: findTeamHandler,
 }
 
 func findTeamHandler(cmd *cobra.Command, args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("received %d arguments but expected 1", len(args))
+	if len(args) == 0 {
+		return fmt.Errorf("received no arguments but expected at least 1")
 	}
-
-	teamName := args[0]
 
 	// Get data
 	repo := data.RepositoryFactory("")
@@ -34,24 +32,28 @@ func findTeamHandler(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	var teamFound bool
-	var foundTeam types.Team
+	foundTeams := []types.Team{}
 
-	for _, team := range state.Teams {
-		if team.Name == teamName {
-			teamFound = true
-			foundTeam = team
-			break
+	for _, teamName := range args {
+		var teamFound bool
+
+		for _, team := range state.Teams {
+			if team.Name == teamName {
+				teamFound = true
+				foundTeams = append(foundTeams, team)
+				break
+			}
+		}
+
+		if !teamFound {
+			fmt.Printf("could not find team: %q\n", teamName)
 		}
 	}
 
-	if !teamFound {
-		fmt.Printf("could not find team: %q\n", teamName)
-
-		return nil
+	for _, team := range foundTeams {
+		fmt.Printf("%d) %q: %.0f\n", team.Rank, team.Name, team.Rating)
 	}
 
-	fmt.Printf("%q: %f\n", foundTeam.Name, foundTeam.Rating)
 	return nil
 }
 
